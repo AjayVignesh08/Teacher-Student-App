@@ -1,0 +1,82 @@
+<body>
+  <div class="container">
+    <div class="primary">
+      <h2 class="text-left ml-4 mt-4 mb-4">Add/Edit Teacher</h2>
+      <div class="container  pb-3 pt-3">
+        <form id="teacheradd" action="{{action}}" method="{{method}}" _method="{{method}}">
+          <label for="fname">First Name : </label>
+          <input type="text" id="fname" name="firstName" placeholder="First Name" required value={{teacher.firstName}}>
+          <br>
+          <label for="lname">Last Name : </label>
+          <input type="text" id="lame" name="lastName" placeholder="Last Name" value={{teacher.lastName}}>
+          <br>
+          <label for="age">Age : </label>
+          <input type="text" id="age" name="age" placeholder="Age" required value={{teacher.age}}>
+          <br>
+          <label for="student-gender">Gender:</label>
+          <input type="radio" id="gender-male" value="male" name="gender" {{#if (ifequality teacher.gender "male" )}}
+            checked {{/if}} required />
+          <label for="gender-male">Male</label>
+          <input type="radio" id="gender-female" value="female" name="gender"
+            {{#if (ifequality teacher.gender "female" )}} checked {{/if}} required />
+          <label for="gender-female">Female</label>
+          <br />
+          <input class="btn btn-primary" type="submit" value="Add Teacher" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+
+    const $addTeacherForm = document.querySelector("#teacheradd");
+
+    $addTeacherForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const submitUrl = $addTeacherForm.action;
+      const submitMethod = $addTeacherForm.getAttribute("_method");
+      const formData = new FormData($addTeacherForm);
+      let teacherDetail = {};
+      for (const fields of formData.entries()) {
+        const [key, value] = fields;
+        teacherDetail[key] = value;
+      }
+
+      const config = {
+        method: submitMethod.toUpperCase(),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(teacherDetail)
+      }
+
+      console.log(config)
+      fetch(submitUrl, config)
+        .then(response => {
+          if (response.status === 200) {
+            return response.json()
+          } else {
+            throw (new Error(response.status))
+          }
+        }
+        )
+        .then(data => {
+          alert(data.message)
+          $addStudentForm.reset();
+        })
+        .catch(error => {
+          switch (error.message) {
+            case "400":
+              alert("Please check form values...");
+              break;
+            case "500":
+              alert("Please Try after some time...");
+              break;
+            default:
+              console.error(error);
+          }
+        })
+    });
+  </script>
